@@ -1,13 +1,15 @@
-/* 
+/*
  *
  * Mongo Hacker
- * MongoDB Shell Enhancements for Hackers 
+ * MongoDB Shell Enhancements for Hackers
  *
  * Tyler J. Brock - 2012
  *
  * http://tylerbrock.github.com/mongo-hacker
  *
  */
+ DBQuery.prototype._prettyShell = true
+
 
 __ansi = {
     csi: String.fromCharCode(0x1B) + '[',
@@ -23,7 +25,7 @@ __ansi = {
         yellow: '3',
         blue: '4',
         magenta: '5',
-        cyan: '6'  
+        cyan: '6'
     }
 }
 
@@ -34,7 +36,7 @@ if (_isWindows()) {
 var ver = db.version().split(".");
 if ( ver[0] <= parseInt("2") && ver[1] < parseInt("2") ) {
   print(colorize("\nSorry! Mongo version 2.2.x and above is required! Please upgrade.\n", "red", true));
-} 
+}
 
 setVerboseShell(true);
 setIndexParanoia(true);
@@ -42,14 +44,14 @@ setAutoMulti(true);
 
 __indent = "  "
 
-function setIndexParanoia( value ) { 
-    if( value == undefined ) value = true; 
-    _indexParanoia = value; 
+function setIndexParanoia( value ) {
+    if( value == undefined ) value = true;
+    _indexParanoia = value;
 }
 
-function setAutoMulti( value ) { 
-    if( value == undefined ) value = true; 
-    _autoMulti = value; 
+function setAutoMulti( value ) {
+    if( value == undefined ) value = true;
+    _autoMulti = value;
 }
 
 function controlCode( parameters ) {
@@ -148,15 +150,15 @@ Array.tojson = function( a , indent , nolint ){
 tojson = function( x, indent , nolint ) {
     if ( x === null )
         return colorize("null", "red", true);
-    
+
     if ( x === undefined )
         return colorize("undefined", "magenta", true);
 
     if ( x.isObjectId ) {
         return 'ObjectId(' + colorize('"' + x.str + '"', "green", false, true) + ')';
     }
-    
-    if (!indent) 
+
+    if (!indent)
         indent = "";
 
     switch ( typeof x ) {
@@ -186,7 +188,7 @@ tojson = function( x, indent , nolint ) {
         return colorize(s, "green", true);
     }
     case "number":
-        return colorize(x, "red") 
+        return colorize(x, "red")
     case "boolean":
         return colorize("" + x, "blue");
     case "object": {
@@ -201,22 +203,22 @@ tojson = function( x, indent , nolint ) {
     default:
         throw "tojson can't handle type " + ( typeof x );
     }
-    
+
 }
 
 tojsonObject = function( x, indent , nolint ) {
     var lineEnding = nolint ? " " : "\n";
     var tabSpace = nolint ? "" : __indent;
-    
+
     assert.eq( ( typeof x ) , "object" , "tojsonObject needs object, not [" + ( typeof x ) + "]" );
 
-    if (!indent) 
+    if (!indent)
         indent = "";
-    
+
     if ( typeof( x.tojson ) == "function" && x.tojson != tojson ) {
         return x.tojson(indent,nolint);
     }
-    
+
     if ( x.constructor && typeof( x.constructor.tojson ) == "function" && x.constructor.tojson != tojson ) {
         return x.constructor.tojson( x, indent , nolint );
     }
@@ -225,12 +227,12 @@ tojsonObject = function( x, indent , nolint ) {
         return "{ $maxKey : 1 }";
     if ( x.toString() == "[object MinKey]" )
         return "{ $minKey : 1 }";
-    
+
     var s = "{" + lineEnding;
 
     // push one level of indent
     indent += tabSpace;
-    
+
     var total = 0;
     for ( var k in x ) total++;
     if ( total == 0 ) {
@@ -242,7 +244,7 @@ tojsonObject = function( x, indent , nolint ) {
         keys = x._simpleKeys();
     var num = 1;
     for ( var k in keys ){
-        
+
         var val = x[k];
         if ( val == DB.prototype || val == DBCollection.prototype )
             continue;
@@ -276,7 +278,7 @@ DBCollection.prototype.update = function( query , obj , upsert, multi ) {
         this._validateForStorage( obj );
     }
 
-    // can pass options via object for improved readability    
+    // can pass options via object for improved readability
     if ( typeof(upsert) === 'object' ) {
         assert( multi === undefined, "Fourth argument must be empty when specifying upsert and multi with an object." );
 
@@ -298,7 +300,7 @@ DBCollection.prototype.agg_group = function( name, group_field, operation, op_va
     if (filter != undefined) {
         ops.push({ '$match': filter })
     }
-  
+
     group_op['$group'][name] = { };
     group_op['$group'][name]['$' + operation] = op_value
     ops.push(group_op);
