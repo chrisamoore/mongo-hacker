@@ -329,7 +329,7 @@ prompt = function() {
     var host = serverstatus.host.split('.')[0];
     var process = serverstatus.process;
     var version = db.serverBuildInfo().version;
-    return host + '(' + process + '-' + version + ') ' + db + '> ';
+    return '╭─' + host + '@(' + process + '-v' + version + ') ' + db + '> \n╰─  ';
 }
 
 DBQuery.prototype.shellPrint = function(){
